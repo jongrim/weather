@@ -6,6 +6,7 @@ import json
 from datetime import datetime, timedelta
 import shelve
 import os
+from collections import namedtuple
 
 
 class Weather:
@@ -13,6 +14,7 @@ class Weather:
     api_key = ''
     api_limit = timedelta(minutes=10)
     last_call_time = None
+    WeatherData = None
 
     def __init__(self, last_call_time=None):
         with open('API_key.txt', 'r') as file:
@@ -46,10 +48,20 @@ class Weather:
             file['last_call_time'] = now
         self.last_call_time = now
 
-    def get_weather_data_using_id(self, id):
-        params = {'id': id}
-        base_url = 'api.openweathermap.org/data/2.5/weather'
+    def get_current_weather_using_id(self, id):
+        params = {'APPID': self.api_key, 'id': id}
+        base_url = 'http://api.openweathermap.org/data/2.5/weather'
 
         # check last call time to rate limit
-        if self.check_if_within_limit:
+        if self.check_if_within_limit():
             response = requests.get(base_url, params=params)
+            weather_data = response.json
+            response = response
+            WeatherData = namedtuple('WeatherData', ['json', 'response'])
+            return WeatherData(weather_data, response)
+        else:
+            return None
+
+    def display_weather(self):
+        if not self.weather_data:
+            raise TypeError
