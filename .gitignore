@@ -1,5 +1,8 @@
 bin/
 lib/
 include/
+__pycache__/
+.vscode/
+API_key.txt
 pip-selfcheck.json
 pyvenv.cfg
