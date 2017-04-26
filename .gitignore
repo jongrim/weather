@@ -6,3 +6,5 @@ __pycache__/
 API_key.txt
 pip-selfcheck.json
 pyvenv.cfg
+*.db
+
