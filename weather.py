@@ -48,7 +48,7 @@ class Weather:
             file['last_call_time'] = now
         self.last_call_time = now
 
-    def get_current_weather_using_id(self, id):
+    def request_weather_with_id(self, id):
         params = {'APPID': self.api_key, 'id': id}
         base_url = 'http://api.openweathermap.org/data/2.5/weather'
 
@@ -58,10 +58,19 @@ class Weather:
             weather_data = response.json
             response = response
             WeatherData = namedtuple('WeatherData', ['json', 'response'])
-            return WeatherData(weather_data, response)
-        else:
-            return None
+            self.WeatherData = WeatherData(weather_data, response)
+            self.store_current_time()
 
-    def display_weather(self):
-        if not self.weather_data:
-            raise TypeError
+    def get_weather_by_id(self, city_name):
+        '''Links together the other methods to retrieve the weather data
+
+        Returns:
+            None: Returns None when the city name is not found in the city_list
+            WeatherData.json (json): The json weather data stored on the
+                object's WeatherData named tuple.
+        '''
+        city_id = self.get_city_id_by_name(city_name)
+        if not city_id:
+            return None
+        self.get_current_weather_using_id(city_id)
+        return self.WeatherData.json

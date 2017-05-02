@@ -51,10 +51,10 @@ class TestWeather(unittest.TestCase):
         w = Weather(datetime.datetime(1970, 1, 1))
         id = 1
         api_key = w.api_key
-        r = w.get_current_weather_using_id(id)
+        w.request_weather_with_id(id)
         arg = f'http://api.openweathermap.org/data/2.5/weather?id=1&APPID={api_key}'
         assert mock_request.called_with(arg)
-        self.assertTrue(r)
+        self.assertTrue(w.WeatherData)
 
     @patch('requests.get')
     def test_unsuccessful_request_to_api(self, mock_request):
@@ -63,12 +63,23 @@ class TestWeather(unittest.TestCase):
         api request
         '''
         w = Weather(datetime.datetime.now())
+        w.WeatherData = False
         id = 1
         api_key = w.api_key
-        r = w.get_current_weather_using_id(id)
+        w.request_weather_with_id(id)
         arg = f'http://api.openweathermap.org/data/2.5/weather?id=1&APPID={api_key}'
-        assert mock_request.called_with(arg)
-        self.assertFalse(r)
+        self.assertFalse(w.WeatherData)
+
+    def test_unsuccessful_weather_request_with_id(self):
+        w = Weather(datetime.datetime.now())
+        result = w.get_weather_by_id('Azzzzzle')
+        self.assertFalse(result)
+
+    # @patch('requests.get')
+    # def test_successful_weather_request_with_id(self, mock_request):
+    #     w = Weather(datetime.datetime(1970, 1, 1))
+    #     result = w.request_weather_with_id('Atlanta')
+    #     self.assertTrue(result)
 
 
 class TestWeatherCityList(unittest.TestCase):
