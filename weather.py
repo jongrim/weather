@@ -61,7 +61,7 @@ class Weather:
             self.WeatherData = WeatherData(weather_data, response)
             self.store_current_time()
 
-    def get_weather_by_id(self, city_name):
+    def get_weather_by_id(self, city_name, forecast=False):
         '''Links together the other methods to retrieve the weather data
 
         Returns:
@@ -73,4 +73,24 @@ class Weather:
         if not city_id:
             return None
         self.get_current_weather_using_id(city_id)
-        return self.WeatherData.json
+        self.display_weather(self.WeatherData.json)
+
+    def display_weather(self, json):
+        '''Display the json in a pleasing manner'''
+        # TODO
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description='Get the weather in your terminal')
+    parser.add_argument('city', help='The city for which you would like the \
+                        weather')
+    parser.add_argument('-f', '--forecast', dest='forecast',
+                        action='store_true')
+    args = parser.parse_args()
+    w = Weather()
+    w.get_weather_by_id(args.city, args.forecast)
+
+
+if __name__ == '__main__':
+    main()
