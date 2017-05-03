@@ -3,7 +3,6 @@
 import argparse
 import json
 import os
-import pprint
 import shelve
 from collections import namedtuple
 from datetime import datetime, timedelta
@@ -16,7 +15,7 @@ class Weather:
     api_key = ''
     api_limit = timedelta(minutes=10)
     last_call_time = None
-    weather_data_dict = {}
+    wthr_data_dict = {}
 
     def __init__(self, last_call_time=None):
         with open('API_key.txt', 'r') as file:
@@ -49,28 +48,38 @@ class Weather:
     def restore_saved_info(self, last_call_time):
             with shelve.open('weather') as file:
                 self.last_call_time = last_call_time or file['last_call_time']
-                self.weather_data_dict = file['weather_data']
+                self.wthr_data_dict = file['weather_data']
 
     def store_current_info(self):
         '''Store the last call time and weather data for future reference'''
         now = datetime.now()
         with shelve.open('weather') as file:
             file['last_call_time'] = now
-            file['weather_data'] = self.weather_data_dict
+            file['weather_data'] = self.wthr_data_dict
         self.last_call_time = now
 
-    def request_weather_with_id(self, id, forecast):
+    def request_weather_with_id(self, id, forecast=None):
         '''Request current weather conditions for the supplied city id and
-        update the instance variables last_call_time and weather_data_dict.
+        update the instance variables last_call_time and wthr_data_dict.
         '''
+        # Builds params and url for the api request
         params = {'APPID': self.api_key, 'id': id}
-        base_url = 'http://api.openweathermap.org/data/2.5/weather'
+        if forecast:
+            base_url = 'http://api.openweathermap.org/data/2.5/forecast'
+        else:
+            base_url = 'http://api.openweathermap.org/data/2.5/weather'
+
+        # Makes sure the dictionary is initialized properly
+        cur_city = self.wthr_data_dict.setdefault(
+            id, {'forecast': {}, 'current': {}})
 
         # check last call time to rate limit
         if self.check_if_within_limit():
             response = requests.get(base_url, params=params)
-            self.weather_data_dict['json'] = response.json()
-            self.weather_data_dict['response'] = response
+            if forecast:
+                cur_city['forecast']['json'] = response.json()
+            else:
+                cur_city['current']['json'] = response.json()
             self.store_current_info()
 
     def get_weather_by_id(self, city_name, forecast=False, indent=2):
@@ -84,20 +93,34 @@ class Weather:
         if not city_id:
             raise KeyError(f'No city found matching {city_name}')
         self.request_weather_with_id(city_id, forecast)
-        self.display_weather(forecast, indent)
+        self.display_weather(id, forecast, indent)
 
-    def display_weather(self, forecast, indent):
+    def display_weather(self, id, forecast=None, indent=2):
         '''Display the json in a pleasing manner'''
-        weather_dict = self.weather_data_dict['json']
-        result_city = weather_dict['name']
-        weather_description = weather_dict['weather'][0]['description']
-        Temps_F = convert_temps(weather_dict['main'])
-        sunrise = convert_timestamp(weather_dict['sys']['sunrise'])
-        sunset = convert_timestamp(weather_dict['sys']['sunset'])
-        rain = weather_dict.get('rain', None)
-        clouds = weather_dict.get('clouds', None)
-        wind = weather_dict.get('wind', None)
-        snow = weather_dict.get('snow', None)
+        cur_city = self.wthr_data_dict[id]
+        if forecast:
+            # Get data out of forecast dict
+            weather_dict = cur_city['forecast'].get('json', None)
+            if not weather_dict:
+                print('No cached forecast weather information \
+                for this location')
+                return
+        else:
+            # Get data out of current dict
+            weather_dict = cur_city['current'].get('json', None)
+            if not weather_dict:
+                print('No cached current weather information \
+                for this location')
+                return
+            result_city = weather_dict['name']
+            weather_description = weather_dict['weather'][0]['description']
+            Temps_F = convert_temps(weather_dict['main'])
+            sunrise = convert_timestamp(weather_dict['sys']['sunrise'])
+            sunset = convert_timestamp(weather_dict['sys']['sunset'])
+            rain = weather_dict.get('rain', None)
+            clouds = weather_dict.get('clouds', None)
+            wind = weather_dict.get('wind', None)
+            snow = weather_dict.get('snow', None)
 
         space = ' ' * indent
 
@@ -150,6 +173,8 @@ def main():
     parser.add_argument('-d', '--datetime', dest='datetime',
                         action='store_true', help='For development purposes \
                         only.')
+    # TODO add option to colorize output
+    # TODO add option for ascii art
     args = parser.parse_args()
     if args.datetime:
         w = Weather(datetime(1970, 1, 1))

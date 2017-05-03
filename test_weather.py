@@ -42,8 +42,9 @@ class TestWeather(unittest.TestCase):
         w = Weather(datetime.datetime.now())
         self.assertFalse(w.check_if_within_limit())
 
+    @patch('weather.Weather.store_current_info')
     @patch('requests.get')
-    def test_successful_request_to_api(self, mock_request):
+    def test_successful_request_to_api(self, mock_request, mock_store):
         '''
         A Weather object whose last call time is greater than the rate limit
         should be able to make an api call
@@ -54,7 +55,7 @@ class TestWeather(unittest.TestCase):
         w.request_weather_with_id(id)
         arg = f'http://api.openweathermap.org/data/2.5/weather?id=1&APPID={api_key}'
         assert mock_request.called_with(arg)
-        self.assertTrue(w.WeatherData)
+        self.assertTrue(w.wthr_data_dict)
 
     @patch('requests.get')
     def test_unsuccessful_request_to_api(self, mock_request):
@@ -102,8 +103,8 @@ class TestWeatherConversions(unittest.TestCase):
         temps = {'temp': 280.32, 'temp_min': 279.15, 'temp_max': 281.15}
         Temps_F = convert_temps(temps)
         self.assertEqual(Temps_F.current, 44.91)
-        self.assertEqual(Temps_F.high, 46.4)
-        self.assertEqual(Temps_F.low, 42.8)
+        self.assertEqual(Temps_F.max, 46.4)
+        self.assertEqual(Temps_F.min, 42.8)
 
     def test_convert_UTC_timestamp(self):
         time = convert_timestamp(1485762037)
