@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from weather import Weather
+from weather import Weather, convert_temps, convert_timestamp
 from unittest.mock import patch
 
 
@@ -94,6 +94,20 @@ class TestWeatherCityList(unittest.TestCase):
     def test_get_id_by_city_name_where_name_isnot_included(self):
         city = self.w.get_city_id_by_name('ZZZZZ')
         self.assertEqual(city, None)
+
+
+class TestWeatherConversions(unittest.TestCase):
+
+    def test_convert_kelvin_to_fahrenheiht(self):
+        temps = {'temp': 280.32, 'temp_min': 279.15, 'temp_max': 281.15}
+        Temps_F = convert_temps(temps)
+        self.assertEqual(Temps_F.current, 44.91)
+        self.assertEqual(Temps_F.high, 46.4)
+        self.assertEqual(Temps_F.low, 42.8)
+
+    def test_convert_UTC_timestamp(self):
+        time = convert_timestamp(1485762037)
+        self.assertEqual(time, '2017-01-30 02:40:37')
 
 
 if __name__ == '__main__':

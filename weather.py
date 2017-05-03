@@ -1,13 +1,14 @@
 #! /usr/bin/env python
 
-import requests
 import argparse
 import json
-from datetime import datetime, timedelta
-import shelve
 import os
-from collections import namedtuple
 import pprint
+import shelve
+from collections import namedtuple
+from datetime import datetime, timedelta
+
+import requests
 
 
 class Weather:
@@ -79,6 +80,36 @@ class Weather:
     def display_weather(self):
         '''Display the json in a pleasing manner'''
         pprint.pprint(self.WeatherData.json)
+        weather_dict = self.WeatherData.json
+        result_city = weather_dict['name']
+        weather_description = weather_dict['weather'][0]['description']
+        Temps_F = convert_temps(weather_dict['main'])
+        sunrise = convert_timestamp(weather_dict['sys']['sunrise'])
+        sunset = convert_timestamp(weather_dict['sys']['sunset'])
+
+        width = 10
+        print(f'Current weather for {result_city}:')
+        print(f'Weather description: {weather_description}')
+        print(f'Temperature:')
+        print(f'  Current: {Temps_F.current:{width}}')
+        print(f'  High: {Temps_F.high:{width}}')
+        print(f'  Low: {Temps_F.low:{width}}')
+        print(f'Sunrise: {sunrise}')
+        print(f'Sunset: {sunset}')
+
+
+def convert_temps(temp_dict):
+    current_temp_f = round((temp_dict['temp'] * (9 / 5) - 459.67), 2)
+    max_temp_f = round((temp_dict['temp_max'] * (9 / 5) - 459.67), 2)
+    min_temp_f = round((temp_dict['temp_min'] * (9 / 5) - 459.67), 2)
+    Temps_F = namedtuple('Temps_F', ['current', 'high', 'low'])
+    return Temps_F(current_temp_f, max_temp_f, min_temp_f)
+
+
+def convert_timestamp(UTC_timestamp):
+    time = datetime.fromtimestamp(UTC_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    return time
+
 
 
 def main():
