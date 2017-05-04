@@ -33,7 +33,7 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
             pprint.pprint(weather_dict)
             return
         result_city = weather_dict['name']
-        weather_description = weather_dict['weather'][0]['description']
+        weather_set = weather_dict['weather']
         Temps_F = convert_temps(weather_dict['main'])
         sunrise = convert_timestamp(weather_dict['sys']['sunrise'])
         sunset = convert_timestamp(weather_dict['sys']['sunset'])
@@ -48,7 +48,10 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
         pass
     else:
         print(f'Current weather for {result_city}:')
-        print(f'{space}Weather description: {weather_description}')
+        # print(f'{space}Weather description: ', end='')
+        for x in weather_set:
+            print(f"{space}{x['description'].capitalize()}")
+        # print('')
         print(f'{space}Temperatures:')
         print(f'{space}{space}Current: ', f'{Temps_F.current}'.rjust(5))
         print(f'{space}{space}Max: ', f'{Temps_F.max}'.rjust(9))
@@ -57,14 +60,22 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
         print(f'{space}Sunrise: {sunrise}')
         print(f'{space}Sunset: {sunset}')
         if rain:
-            print(f"{space}Rain volume for last 3 hours: {rain['3h']}")
+            if rain.get('3h'):
+                print(f"{space}Rain volume for last 3 hours: {rain['3h']}")
         if clouds:
-            print(f"{space}Cloudiness: {clouds['all']}%")
+            if clouds.get('all'):
+                print(f"{space}Cloudiness: {clouds['all']}%")
         if wind:
-            print(f"{space}Wind speed: {wind['speed']} meter/sec")
-            print(f"{space}Wind direction: {wind['deg']} degrees")
+            if wind.get('speed'):
+                print(f"{space}Wind speed: {wind['speed']} meters/ssec")
+            if wind.get('deg'):
+                print(f"{space}Wind direction: {wind['deg']} degrees")
+            if wind.get('gust'):
+                print(f'{space}', end='')
+                print("Wind gust: {wind.get('gust')} meters/sec")
         if snow:
-            print(f"{space}Snow volume for last 3 hours: {snow['3h']}")
+            if snow.get('3h'):
+                print(f"{space}Snow volume for last 3 hours: {snow['3h']}")
 
 
 def convert_temps(temp_dict):
