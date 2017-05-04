@@ -1,6 +1,7 @@
 import unittest
 import datetime
-from weather import Weather, convert_temps, convert_timestamp
+from weather import Weather
+from wtw import convert_temps, convert_timestamp
 from unittest.mock import patch
 
 
