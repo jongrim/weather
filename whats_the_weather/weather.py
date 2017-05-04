@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 import json
 import os
 import shelve
@@ -14,15 +12,22 @@ class Weather:
     api_limit = timedelta(minutes=10)
     last_call_time = None
     wthr_data_dict = {}
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    data_dir = os.path.join(root_dir, 'data/')
+    data_paths = {
+        'api': os.path.join(data_dir, 'API_key.txt'),
+        'city_list': os.path.join(data_dir, 'city.list.json'),
+        'db': os.path.join(data_dir, 'weather')
+    }
 
     def __init__(self, last_call_time=None):
-        with open('API_key.txt', 'r') as file:
+        with open(self.data_paths['api'], 'r') as file:
             self.api_key = file.readline().strip('\n')
 
-        with open('city.list.json', 'r') as file:
+        with open(self.data_paths['city_list'], 'r') as file:
             self.city_list = json.load(file)
 
-        if os.path.isfile('weather.db'):
+        if os.path.isfile("{self.data_paths['db']}+.db"):
             self.restore_saved_info(last_call_time)
 
         else:
@@ -38,20 +43,20 @@ class Weather:
         return (datetime.now() - self.last_call_time) > self.api_limit
 
     def make_shelf_file(self, last_call_time):
-        shelfFile = shelve.open('weather')
+        shelfFile = shelve.open(self.data_paths['db'])
         shelfFile['last_call_time'] = datetime(1988, 6, 6)
         self.last_call_time = last_call_time or shelfFile['last_call_time']
         shelfFile.close()
 
     def restore_saved_info(self, last_call_time):
-            with shelve.open('weather') as file:
+            with shelve.open(self.data_paths['db']) as file:
                 self.last_call_time = last_call_time or file['last_call_time']
                 self.wthr_data_dict = file['weather_data']
 
     def store_current_info(self):
         '''Store the last call time and weather data for future reference'''
         now = datetime.now()
-        with shelve.open('weather') as file:
+        with shelve.open(self.data_paths['db']) as file:
             file['last_call_time'] = now
             file['weather_data'] = self.wthr_data_dict
         self.last_call_time = now

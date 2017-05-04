@@ -2,7 +2,7 @@ from datetime import datetime
 import argparse
 import pprint
 from collections import namedtuple
-from weather import Weather
+from whats_the_weather.weather import Weather
 
 
 def display_weather(city_name, forecast=None, indent=2, show_json=False,

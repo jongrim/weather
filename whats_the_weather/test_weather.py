@@ -1,7 +1,7 @@
 import unittest
 import datetime
-from weather import Weather
-from wtw import convert_temps, convert_timestamp
+from whats_the_weather.weather import Weather
+from whats_the_weather.wtw import convert_temps, convert_timestamp
 from unittest.mock import patch
 
 
@@ -43,7 +43,7 @@ class TestWeather(unittest.TestCase):
         w = Weather(datetime.datetime.now())
         self.assertFalse(w.check_if_within_limit())
 
-    @patch('weather.Weather.store_current_info')
+    @patch('whats_the_weather.weather.Weather.store_current_info')
     @patch('requests.get')
     def test_successful_request_to_api(self, mock_request, mock_store):
         '''
