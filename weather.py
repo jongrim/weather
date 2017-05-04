@@ -58,12 +58,12 @@ class Weather:
             file['weather_data'] = self.wthr_data_dict
         self.last_call_time = now
 
-    def request_weather_with_id(self, id, forecast=None):
+    def request_weather_with_id(self, city_id, forecast=None):
         '''Request current weather conditions for the supplied city id and
         update the instance variables last_call_time and wthr_data_dict.
         '''
         # Builds params and url for the api request
-        params = {'APPID': self.api_key, 'id': id}
+        params = {'APPID': self.api_key, 'id': city_id}
         if forecast:
             base_url = 'http://api.openweathermap.org/data/2.5/forecast'
         else:
@@ -71,7 +71,7 @@ class Weather:
 
         # Makes sure the dictionary is initialized properly
         cur_city = self.wthr_data_dict.setdefault(
-            id, {'forecast': {}, 'current': {}})
+            city_id, {'forecast': {}, 'current': {}})
 
         # check last call time to rate limit
         if self.check_if_within_limit():
@@ -93,11 +93,11 @@ class Weather:
         if not city_id:
             raise KeyError(f'No city found matching {city_name}')
         self.request_weather_with_id(city_id, forecast)
-        self.display_weather(id, forecast, indent)
+        self.display_weather(city_id, forecast, indent)
 
-    def display_weather(self, id, forecast=None, indent=2):
+    def display_weather(self, city_id, forecast=None, indent=2):
         '''Display the json in a pleasing manner'''
-        cur_city = self.wthr_data_dict[id]
+        cur_city = self.wthr_data_dict[city_id]
         if forecast:
             # Get data out of forecast dict
             weather_dict = cur_city['forecast'].get('json', None)
@@ -139,7 +139,7 @@ class Weather:
             if rain:
                 print(f"{space}Rain volume for last 3 hours: {rain['3h']}")
             if clouds:
-                print(f"{space}Cloudiness: {clouds['all']}")
+                print(f"{space}Cloudiness: {clouds['all']}%")
             if wind:
                 print(f"{space}Wind speed: {wind['speed']} meter/sec")
                 print(f"{space}Wind direction: {wind['deg']} degrees")
