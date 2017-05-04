@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import pprint
 import shelve
 from collections import namedtuple
 from datetime import datetime, timedelta
@@ -82,7 +83,7 @@ class Weather:
                 cur_city['current']['json'] = response.json()
             self.store_current_info()
 
-    def get_weather_by_id(self, city_name, forecast=False, indent=2):
+    def get_weather_by_id(self, city_name, forecast=False):
         '''Links together the other methods to retrieve the weather data.
 
         Raises:
@@ -93,11 +94,14 @@ class Weather:
         if not city_id:
             raise KeyError(f'No city found matching {city_name}')
         self.request_weather_with_id(city_id, forecast)
-        self.display_weather(city_id, forecast, indent)
+        return city_id
 
-    def display_weather(self, city_id, forecast=None, indent=2):
+    def display_weather(self, city_name, forecast=None, indent=2,
+                        show_json=False):
         '''Display the json in a pleasing manner'''
+        city_id = self.get_weather_by_id(city_name, forecast)
         cur_city = self.wthr_data_dict[city_id]
+
         if forecast:
             # Get data out of forecast dict
             weather_dict = cur_city['forecast'].get('json', None)
@@ -105,12 +109,18 @@ class Weather:
                 print('No cached forecast weather information \
                 for this location')
                 return
+            if show_json:
+                pprint.pprint(weather_dict)
+                return
         else:
             # Get data out of current dict
             weather_dict = cur_city['current'].get('json', None)
             if not weather_dict:
                 print('No cached current weather information \
                 for this location')
+                return
+            if show_json:
+                pprint.pprint(weather_dict)
                 return
             result_city = weather_dict['name']
             weather_description = weather_dict['weather'][0]['description']
@@ -173,6 +183,9 @@ def main():
     parser.add_argument('-d', '--datetime', dest='datetime',
                         action='store_true', help='For development purposes \
                         only.')
+    parser.add_argument('-j', '--json', dest='json',
+                        action='store_true', help='Show me the JSON! (Pretty \
+                        printed of course')
     # TODO add option to colorize output
     # TODO add option for ascii art
     args = parser.parse_args()
@@ -180,7 +193,7 @@ def main():
         w = Weather(datetime(1970, 1, 1))
     else:
         w = Weather()
-    w.get_weather_by_id(args.city, args.forecast, args.indent)
+    w.display_weather(args.city, args.forecast, args.indent, args.json)
 
 
 if __name__ == '__main__':
