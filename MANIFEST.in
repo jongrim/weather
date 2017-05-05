@@ -1,0 +1,3 @@
+include README.md
+include whats_the_weather/data/city.list.json
+include LICENSE.txt

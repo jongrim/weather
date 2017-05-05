@@ -8,7 +8,7 @@ setup(
     author='Jonathan Grim',
     author_email='jonjongrim@gmail.com',
     license='MIT',
-    data_files=[('data', ['data/city.list.json'])],
+    include_package_data=True,
     packages=['whats_the_weather'],
     install_requires=[
         'requests',
