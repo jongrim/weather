@@ -102,7 +102,6 @@ class Weather:
         return city_id
 
     def setup_data_directory_and_files(self):
-        os.mkdir(self.data_dir)
         os.chdir(self.data_dir)
         key = input('Enter openweathermap api key:\n')
         while not key:
