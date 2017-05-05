@@ -7,4 +7,5 @@ API_key.txt
 pip-selfcheck.json
 pyvenv.cfg
 *.db
-
+*_result.json
+*.egg-info

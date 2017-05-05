@@ -94,7 +94,7 @@ def main():
                         only.')
     parser.add_argument('-j', '--json', dest='json',
                         action='store_true', help='Show me the JSON! (Pretty \
-                        printed of course')
+                        printed of course)')
     # TODO add option to colorize output
     # TODO add option for ascii art
     args = parser.parse_args()
