@@ -1,7 +1,7 @@
 from datetime import datetime
 import argparse
 import pprint
-from collections import namedtuple
+from whats_the_weather.helpers import convert_temps, convert_timestamp
 from whats_the_weather.weather import Weather
 
 
@@ -9,6 +9,7 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
                     dt=None):
     '''Makes a Weather object'''
     w = Weather(dt)
+
     city_id = w.get_weather_by_id(city_name, forecast)
     cur_city = w.wthr_data_dict[city_id]
 
@@ -76,19 +77,6 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
         if snow:
             if snow.get('3h'):
                 print(f"{space}Snow volume for last 3 hours: {snow['3h']}")
-
-
-def convert_temps(temp_dict):
-    current_temp_f = round((temp_dict['temp'] * (9 / 5) - 459.67), 2)
-    max_temp_f = round((temp_dict['temp_max'] * (9 / 5) - 459.67), 2)
-    min_temp_f = round((temp_dict['temp_min'] * (9 / 5) - 459.67), 2)
-    Temps_F = namedtuple('Temps_F', ['current', 'max', 'min'])
-    return Temps_F(current_temp_f, max_temp_f, min_temp_f)
-
-
-def convert_timestamp(UTC_timestamp):
-    time = datetime.fromtimestamp(UTC_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    return time
 
 
 def main():

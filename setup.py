@@ -12,4 +12,9 @@ setup(
     install_requires=[
         'requests',
     ],
+    entry_points={
+        'console_scripts': [
+            'wtw = whats_the_weather.__main__:main'
+        ]
+    }
 )

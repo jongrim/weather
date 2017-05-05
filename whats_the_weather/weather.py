@@ -21,13 +21,16 @@ class Weather:
     }
 
     def __init__(self, last_call_time=None):
+        if not os.path.isdir(self.data_dir):
+            self.setup_data_directory_and_files()
+
         with open(self.data_paths['api'], 'r') as file:
             self.api_key = file.readline().strip('\n')
 
         with open(self.data_paths['city_list'], 'r') as file:
             self.city_list = json.load(file)
 
-        if os.path.isfile("{self.data_paths['db']}+.db"):
+        if os.path.isfile("{self.data_paths['db']+'.db'}"):
             self.restore_saved_info(last_call_time)
 
         else:
@@ -97,3 +100,12 @@ class Weather:
             raise KeyError(f'No city found matching {city_name}')
         self.request_weather_with_id(city_id, forecast)
         return city_id
+
+    def setup_data_directory_and_files(self):
+        os.mkdir(self.data_dir)
+        os.chdir(self.data_dir)
+        key = input('Enter openweathermap api key')
+        while not key:
+            input('Please enter your api key for openweathermap')
+        with open(self.data_paths['api'], 'w') as file:
+            file.write(key)
