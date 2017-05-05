@@ -21,7 +21,7 @@ class Weather:
     }
 
     def __init__(self, last_call_time=None):
-        if not os.path.isdir(self.data_dir):
+        if not os.path.isfile(self.data_paths['api']):
             self.setup_data_directory_and_files()
 
         with open(self.data_paths['api'], 'r') as file:
