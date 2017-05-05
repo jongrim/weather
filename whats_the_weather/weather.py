@@ -104,8 +104,8 @@ class Weather:
     def setup_data_directory_and_files(self):
         os.mkdir(self.data_dir)
         os.chdir(self.data_dir)
-        key = input('Enter openweathermap api key')
+        key = input('Enter openweathermap api key:\n')
         while not key:
-            input('Please enter your api key for openweathermap')
+            input('Please enter your api key for openweathermap:\n')
         with open(self.data_paths['api'], 'w') as file:
-            file.write(key)
+            file.write(key + '\n')
