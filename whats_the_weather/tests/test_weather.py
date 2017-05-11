@@ -75,7 +75,7 @@ class TestWeather(unittest.TestCase):
     def test_unsuccessful_weather_request_with_id(self):
         w = Weather(datetime.datetime.now())
         with self.assertRaises(KeyError):
-            w.get_weather_by_id('zzzzzz')
+            w.get_the_weather('zzzzzz')
 
     # @patch('requests.get')
     # def test_successful_weather_request_with_id(self, mock_request):

@@ -10,7 +10,7 @@ def display_weather(city_name, forecast=None, indent=2, show_json=False,
     '''Makes a Weather object'''
     w = Weather(dt)
 
-    city_id = w.get_weather_by_id(city_name, forecast)
+    city_id = w.get_the_weather(city_name, forecast)
     cur_city = w.wthr_data_dict[city_id]
 
     if forecast:
