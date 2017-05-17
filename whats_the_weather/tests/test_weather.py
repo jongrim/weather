@@ -1,7 +1,7 @@
 import unittest
 import datetime
 from whats_the_weather.weather import Weather
-from whats_the_weather.helpers import convert_temps, convert_timestamp
+from whats_the_weather.helpers import convert_temps, convert_timestamp_to_string
 from unittest.mock import patch
 
 
@@ -108,7 +108,7 @@ class TestWeatherConversions(unittest.TestCase):
         self.assertEqual(Temps_F.min, 42.8)
 
     def test_convert_UTC_timestamp(self):
-        time = convert_timestamp(1485762037)
+        time = convert_timestamp_to_string(1485762037)
         self.assertEqual(time, '2017-01-30 02:40:37')
 
 

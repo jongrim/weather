@@ -1,7 +1,10 @@
-from datetime import datetime
 import argparse
 import pprint
-from whats_the_weather.helpers import convert_temps, convert_timestamp
+from datetime import datetime
+
+from whats_the_weather.helpers import (convert_kelvin_to_f, convert_temps,
+                                       convert_timestamp_to_datetime,
+                                       convert_timestamp_to_string)
 from whats_the_weather.weather import Weather
 
 
@@ -29,6 +32,38 @@ def display_forecast_weather(data_dict, space, show_json):
         pprint.pprint(weather_dict)
         return
 
+    frcst_wthr = process_forecast_data(weather_dict)
+    pprint.pprint(frcst_wthr)
+
+
+def process_forecast_data(forecast_dict):
+    '''Loop through the forecast data and build up a summary'''
+    data_list = forecast_dict['list']
+    daily_weather = {}
+
+    # Dict keys
+    max_temp = 'max_temp'
+    min_temp = 'min_temp'
+    wthr_conds = 'wthr_conds'
+    for measure in data_list:
+        day = convert_timestamp_to_datetime(measure['dt']).day
+        daily_weather.setdefault(day, {})
+        day_d = daily_weather[day]
+
+        # Search for maximum temp of the day
+        cur_max = convert_kelvin_to_f(measure['main']['temp_max'])
+        day_d[max_temp] = max(day_d.get(max_temp, 0), cur_max)
+
+        # Search for minimum temp of the day
+        cur_min = convert_kelvin_to_f(measure['main']['temp_min'])
+        day_d[min_temp] = min(day_d.get(min_temp, 0), cur_min)
+
+        # Set and add weather conditions
+        day_d.setdefault(wthr_conds, [])
+        day_d[wthr_conds].append(measure['weather'][0]['description'])
+
+    return daily_weather
+
 
 def display_current_weather(data_dict, space, show_json):
     # Get data out of current dict
@@ -43,8 +78,8 @@ def display_current_weather(data_dict, space, show_json):
     result_city = weather_dict['name']
     weather_set = weather_dict['weather']
     Temps_F = convert_temps(weather_dict['main'])
-    sunrise = convert_timestamp(weather_dict['sys']['sunrise'])
-    sunset = convert_timestamp(weather_dict['sys']['sunset'])
+    sunrise = convert_timestamp_to_string(weather_dict['sys']['sunrise'])
+    sunset = convert_timestamp_to_string(weather_dict['sys']['sunset'])
     rain = weather_dict.get('rain', None)
     clouds = weather_dict.get('clouds', None)
     wind = weather_dict.get('wind', None)
