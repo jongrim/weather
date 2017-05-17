@@ -56,11 +56,13 @@ def process_forecast_data(forecast_dict):
 
         # Search for minimum temp of the day
         cur_min = convert_kelvin_to_f(measure['main']['temp_min'])
-        day_d[min_temp] = min(day_d.get(min_temp, 0), cur_min)
+        day_d[min_temp] = min(day_d.get(min_temp, 150), cur_min)
 
         # Set and add weather conditions
         day_d.setdefault(wthr_conds, [])
-        day_d[wthr_conds].append(measure['weather'][0]['description'])
+        cur_cond = measure['weather'][0]['description']
+        if cur_cond not in day_d[wthr_conds]:
+            day_d[wthr_conds].append(cur_cond)
 
     return daily_weather
 
