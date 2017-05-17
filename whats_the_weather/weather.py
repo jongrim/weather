@@ -136,7 +136,7 @@ class Weather:
         if not city_id:
             raise KeyError(f'No city found matching {city_name}')
         self.request_weather_with_id(city_id, forecast)
-        return city_id
+        return self.wthr_data_dict[city_id]
 
     def setup_data_directory_and_files(self):
         '''Create the data directory and store the API key in the proper file'''
