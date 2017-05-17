@@ -33,7 +33,15 @@ def display_forecast_weather(data_dict, space, show_json):
         return
 
     frcst_wthr = process_forecast_data(weather_dict)
-    pprint.pprint(frcst_wthr)
+    # pprint.pprint(frcst_wthr)
+    max_temp = 'max_temp'
+    min_temp = 'min_temp'
+    wthr_conds = 'wthr_conds'
+    for (day, conds) in frcst_wthr.items():
+        print(f"Weather for {conds['month']}-{day}:")
+        print(f'{space}', f'High: {conds[max_temp]}')
+        print(f'{space}', f'Low: {conds[min_temp]}')
+        print(f'{space}', 'Weather conditions: ', ', '.join(conds[wthr_conds]))
 
 
 def process_forecast_data(forecast_dict):
@@ -46,9 +54,12 @@ def process_forecast_data(forecast_dict):
     min_temp = 'min_temp'
     wthr_conds = 'wthr_conds'
     for measure in data_list:
-        day = convert_timestamp_to_datetime(measure['dt']).day
+        date = convert_timestamp_to_datetime(measure['dt'])
+        day = date.day
         daily_weather.setdefault(day, {})
         day_d = daily_weather[day]
+
+        day_d.setdefault('month', date.month)
 
         # Search for maximum temp of the day
         cur_max = convert_kelvin_to_f(measure['main']['temp_max'])
