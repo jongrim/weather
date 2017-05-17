@@ -139,7 +139,8 @@ class Weather:
         return self.wthr_data_dict[city_id]
 
     def setup_data_directory_and_files(self):
-        '''Create the data directory and store the API key in the proper file'''
+        '''Create the data directory and store the API key in the proper file
+        '''
         os.chdir(self.data_dir)
         key = input('Enter openweathermap api key:\n')
         while not key:

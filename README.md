@@ -10,13 +10,18 @@ It is recommended that What's the Weather be installed in your global site packa
 To install follow these steps:
 1. Clone the project files into a directory of your choosing using `git clone https://github.com/jongrim/whats-the-weather.git`
 2. Change into the new project directory, `whats-the-weather`
-2. (B) If using a virtual environment, create the virtual environment now
+    - If using a virtual environment, create the virtual environment now
 3. Install using the supplied setup.py file by executing `$ pip3 install .`
-- - This will install What's the Weather, as well as its dependency, requests. It also make What's the Weather available within bash using 'wtw'
+    - This will install What's the Weather, as well as its dependency, requests. It also make What's the Weather available within bash using `wtw`
 4. Run WTW by typing `$ wtw <your city here>`. The first time you run it, you'll be prompted for your openweatherapi key.
 
 ## Sample usage
 Using the tool is as easy as calling it from your command line and telling it which city you'd like the weather for:
+
 `$ wtw Atlanta`
+
+The default usage will display current weather info. You can also specify if you want to see a 5 day forecast using the `-f` command:
+
+`$ wtw -f Atlanta`
 
 Help can be displayed with `$ wtw -h`.

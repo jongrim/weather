@@ -1,8 +1,10 @@
-import unittest
 import datetime
-from whats_the_weather.weather import Weather
-from whats_the_weather.helpers import convert_temps, convert_timestamp_to_string
+import unittest
 from unittest.mock import patch
+
+from whats_the_weather.helpers import (convert_temps,
+                                       convert_timestamp_to_string)
+from whats_the_weather.weather import Weather
 
 
 class TestWeather(unittest.TestCase):
@@ -54,7 +56,8 @@ class TestWeather(unittest.TestCase):
         id = 1
         api_key = w.api_key
         w.request_weather_with_id(id)
-        arg = f'http://api.openweathermap.org/data/2.5/weather?id=1&APPID={api_key}'
+        http = 'http://api.openweathermap.org/data/2.5/weather?id=1&APPID='
+        arg = f'{http}{api_key}'
         assert mock_request.called_with(arg)
         self.assertTrue(w.wthr_data_dict)
 
@@ -67,9 +70,10 @@ class TestWeather(unittest.TestCase):
         w = Weather(datetime.datetime.now())
         w.WeatherData = False
         id = 1
-        api_key = w.api_key
+        # api_key = w.api_key
         w.request_weather_with_id(id)
-        arg = f'http://api.openweathermap.org/data/2.5/weather?id=1&APPID={api_key}'
+        # http = 'http://api.openweathermap.org/data/2.5/weather?id=1&APPID='
+        # arg = f'{http}{api_key}'
         self.assertFalse(w.WeatherData)
 
     def test_unsuccessful_weather_request_with_id(self):
